@@ -1,22 +1,29 @@
-let
-  nixpkgs= fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-24.05";
-  pkgs = import nixpkgs { config = {}; overlays = []; };
-in 
+{
+  pkgs ? import <nixpkgs> {},
+  enableRustTools ? false,
+  enableGeneralTools ? false,
+}: let
+  rustTools = with pkgs; [
+    cargo
+    rustup
+  ];
 
-pkgs.mkShell {
-    packages = with pkgs; [
-      cargo
-      rustup
-      neovim
-    ];
-
-    shellHook = ''
-      if [ -f .env ]; then
-        export $(cat .env | grep -v ^# | xargs)
-      fi
-
-      echo $VPN_CONF_PATH
-
-      echo $SRC_DIR
-    '';
+  generalTools = with pkgs; [
+    shellcheck
+    yamllint
+    git
+  ];
+in
+  pkgs.mkShell {
+    packages =
+      (
+        if enableRustTools
+        then rustTools
+        else []
+      )
+      ++ (
+        if enableGeneralTools
+        then generalTools
+        else []
+      );
   }
