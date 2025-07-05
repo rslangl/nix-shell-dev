@@ -11,8 +11,8 @@ curl -L https://nixos.org/nix/install | sh
 # (Optional) Enable experimental features to search packages from CLI
 nix --extra-experimental-features "nix-command flakes" search nixpkgs cargo
 
-# Launch nix-shell
-nix-shell
+# Launch nix-shell with desired tools
+nix-shell --arg enableRustTools true --arg enableGeneralTools true
 ```
 
 ## TODO
